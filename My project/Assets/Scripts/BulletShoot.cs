@@ -17,13 +17,13 @@ public class BulletShoot : MonoBehaviour
 
     void OnEnable()
     {
-        input.Player.ShootTest.performed += OnShoot;
+        input.Player.Attack.performed += OnShoot;
         input.Player.Enable();
     }
 
     void OnDisable()
     {
-        input.Player.ShootTest.performed -= OnShoot;
+        input.Player.Attack.performed -= OnShoot;
         input.Player.Disable();
     }
 
