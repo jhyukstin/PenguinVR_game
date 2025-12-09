@@ -1566,6 +1566,8 @@ MonoBehaviour:
   decelPerSec: 20
   returnRate: 12
   speedAlignRate: 6
+  useSimpleLift: 0
+  liftScale: 1
   pitchPower: 3500
   rollPower: 3000
   yawAssistWithSpeed: 0.002
@@ -1574,6 +1576,13 @@ MonoBehaviour:
   yawDamp: 0.1
   autoLevel: 0.2
   maxRollDegrees: 45
+  inputSmoothing: 10
+  inputDeadzone: 0.1
+  maxAngularVel: 6
+  pitchLeveling: 0.7
+  uprightStrength: 8
+  uprightDamping: 3
+  assistFadeWithInput: 0.6
   stickAction:
     m_Name: Stick
     m_Type: 0
@@ -1601,7 +1610,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  enableKeyboardFallback: 1
+  debugLogInputs: 1
+  debugOnScreen: 1
 --- !u!1001 &451678283
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3049,7 +3059,7 @@ Transform:
   m_GameObject: {fileID: 920634840}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.78, z: 0}
+  m_LocalPosition: {x: -0.144, y: -0.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5113,15 +5123,24 @@ MonoBehaviour:
   accelPerSec: 15
   decelPerSec: 20
   returnRate: 12
-  speedAlignRate: 6
-  pitchPower: 3500
-  rollPower: 3000
+  speedAlignRate: 5
+  useSimpleLift: 0
+  liftScale: 1
+  pitchPower: 2400
+  rollPower: 2200
   yawAssistWithSpeed: 0
-  pitchDamp: 0.15
-  rollDamp: 0.12
+  pitchDamp: 0.35
+  rollDamp: 0.32
   yawDamp: 0.1
-  autoLevel: 0.2
+  autoLevel: 0.4
   maxRollDegrees: 60
+  inputSmoothing: 10
+  inputDeadzone: 0.1
+  maxAngularVel: 6
+  pitchLeveling: 0.5
+  uprightStrength: 6
+  uprightDamping: 4
+  assistFadeWithInput: 0.7
   stickAction:
     m_Name: Stick
     m_Type: 0
@@ -5149,7 +5168,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  enableKeyboardFallback: 1
+  debugLogInputs: 1
+  debugOnScreen: 1
 --- !u!54 &919132147589515282
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5158,7 +5178,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147589515279}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 200
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
