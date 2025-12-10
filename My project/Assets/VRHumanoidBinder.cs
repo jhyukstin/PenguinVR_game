@@ -10,6 +10,7 @@ public class VRHumanoidBinder : MonoBehaviour
     public Vector3 handPositionOffset;
     public Vector3 handRotationOffset;
 
+
     Animator animator;
 
     void Awake()
