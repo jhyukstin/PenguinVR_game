@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -23,7 +24,7 @@ public class PlaneController : MonoBehaviour
     public bool useSimpleLift = false;  // 간이 양력 사용 여부
     public float liftScale = 1.0f;   // 간이 양력 강도(1.0부터 시작)
 
-    private float currentSpeed;
+    public float currentSpeed;
 
     // -------- Attitude (tilt) --------
     [Header("Tilt Torques")]
@@ -65,6 +66,9 @@ public class PlaneController : MonoBehaviour
     Vector2 _stick, _stickRaw;
     bool _accelHeld, _decelHeld;
     float _debugNext;
+
+    // ui object
+    public TextMeshProUGUI speedUIText;
 
     void Awake()
     {
@@ -172,6 +176,8 @@ public class PlaneController : MonoBehaviour
             float v = rb ? rb.linearVelocity.magnitude : 0f;
             Debug.Log($"[Plane] stick=({_stick.x:F2},{_stick.y:F2})  accel={_accelHeld} decel={_decelHeld}  speed={currentSpeed:F1}  vel={v:F1}");
         }
+
+        speedUIText.text = currentSpeed.ToString("F0");
     }
 
     void FixedUpdate()
