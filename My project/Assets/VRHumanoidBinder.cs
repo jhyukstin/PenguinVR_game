@@ -3,55 +3,48 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class VRHumanoidBinder : MonoBehaviour
 {
-    [Header("Targets from XR Rig")]
     public Transform headTarget;
     public Transform leftHandTarget;
     public Transform rightHandTarget;
 
-    [Header("Offsets (tweak in Inspector)")]
-    public Vector3 headPositionOffset;
-    public Vector3 headRotationOffset;
     public Vector3 handPositionOffset;
     public Vector3 handRotationOffset;
 
     Animator animator;
-    Transform headBone;
-    Transform leftHandBone;
-    Transform rightHandBone;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
-
-        if (animator != null)
-        {
-            headBone = animator.GetBoneTransform(HumanBodyBones.Head);
-            leftHandBone = animator.GetBoneTransform(HumanBodyBones.LeftHand);
-            rightHandBone = animator.GetBoneTransform(HumanBodyBones.RightHand);
-        }
     }
 
-    void LateUpdate()
+    void OnAnimatorIK(int layerIndex)
     {
-        // HEAD
-        if (headTarget != null && headBone != null)
+        if (!animator) return;
+
+        // LEFT HAND IK
+        if (leftHandTarget)
         {
-            headBone.position = headTarget.position + headTarget.TransformVector(headPositionOffset);
-            headBone.rotation = headTarget.rotation * Quaternion.Euler(headRotationOffset);
+            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
+            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
+
+            animator.SetIKPosition(AvatarIKGoal.LeftHand,
+                leftHandTarget.position + leftHandTarget.TransformVector(handPositionOffset));
+
+            animator.SetIKRotation(AvatarIKGoal.LeftHand,
+                leftHandTarget.rotation * Quaternion.Euler(handRotationOffset));
         }
 
-        // LEFT HAND
-        if (leftHandTarget != null && leftHandBone != null)
+        // RIGHT HAND IK
+        if (rightHandTarget)
         {
-            leftHandBone.position = leftHandTarget.position + leftHandTarget.TransformVector(handPositionOffset);
-            leftHandBone.rotation = leftHandTarget.rotation * Quaternion.Euler(handRotationOffset);
-        }
+            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
+            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
 
-        // RIGHT HAND
-        if (rightHandTarget != null && rightHandBone != null)
-        {
-            rightHandBone.position = rightHandTarget.position + rightHandTarget.TransformVector(handPositionOffset);
-            rightHandBone.rotation = rightHandTarget.rotation * Quaternion.Euler(handRotationOffset);
+            animator.SetIKPosition(AvatarIKGoal.RightHand,
+                rightHandTarget.position + rightHandTarget.TransformVector(handPositionOffset));
+
+            animator.SetIKRotation(AvatarIKGoal.RightHand,
+                rightHandTarget.rotation * Quaternion.Euler(handRotationOffset));
         }
     }
 }
