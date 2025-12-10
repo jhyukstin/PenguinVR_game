@@ -120,7 +120,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1016848580580094404}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 1000
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -222,7 +222,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.3232323
+        value: 0.76059496
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -230,7 +230,7 @@ TrailRenderer:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.39120483
+        time: 0.6364866
         value: 0
         inSlope: -0.47336626
         outSlope: -0.47336626
@@ -414,15 +414,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 0861ef0bb91980142b7da08f704a138d, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.36
+      value: 2.9466965
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0861ef0bb91980142b7da08f704a138d, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.36
+      value: 2.9466965
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0861ef0bb91980142b7da08f704a138d, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.36
+      value: 2.9466965
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0861ef0bb91980142b7da08f704a138d, type: 3}
       propertyPath: m_LocalPosition.x
