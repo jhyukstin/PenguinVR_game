@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 124061c8abd06b84cb12b5e509acec8e, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -275,6 +275,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2263242079373167759, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: far clip plane
+      value: 983.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2263242079373167759, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 2535063516486322310, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2535063516486322310, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3181879021155146489, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 46.93
@@ -318,6 +334,10 @@ PrefabInstance:
     - target: {fileID: 3985008313867171113, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
       propertyPath: m_Name
       value: PLANEROOT_DEMO
+      objectReference: {fileID: 0}
+    - target: {fileID: 4867125826865408598, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
