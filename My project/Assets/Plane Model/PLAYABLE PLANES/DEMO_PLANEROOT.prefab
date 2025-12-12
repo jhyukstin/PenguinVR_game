@@ -350,10 +350,10 @@ MonoBehaviour:
   plane: {fileID: 7929315391096791188}
   grab: {fileID: 2145402982256735610}
   stickBone: {fileID: 8808906414854296938}
-  visualRootToLock: {fileID: 1866148635960544837}
   maxPitchDeg: 25
   maxRollDeg: 25
   smoothing: 20
+  lockThisTransform: 1
 --- !u!1 &525347222669338675
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,15 +1072,15 @@ MonoBehaviour:
   plane: {fileID: 7929315391096791188}
   grab: {fileID: 6920962992297159810}
   leverBone: {fileID: 3056370785628005933}
-  visualRootToLock: {fileID: 5859853257641178553}
   leverBase: {fileID: 5859853257641178553}
   localAxis: {x: 0, y: 0, z: 1}
-  minAlong: -0.06
-  maxAlong: 0.06
+  minAlong: -0.01
+  maxAlong: 0.01
   smoothing: 15
   leverRotAxis: {x: 1, y: 0, z: 0}
   minDeg: -30
   maxDeg: 30
+  lockThisTransform: 1
 --- !u!1 &737181865279427630
 GameObject:
   m_ObjectHideFlags: 0
@@ -3088,6 +3088,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerOfMass: {fileID: 6195477190295732531}
+  speedUIText: {fileID: 8658910202756591610}
   baseSpeed: 15
   minSpeed: 5
   maxSpeed: 45
@@ -3097,10 +3098,11 @@ MonoBehaviour:
   speedAlignRate: 9
   useSimpleLift: 0
   liftScale: 1
-  currentSpeed: 0
+  useCockpitControls: 1
+  throttle01: 0.5
+  throttleResponse: 25
   pitchPower: 2200
   rollPower: 1800
-  yawAssistWithSpeed: 0
   pitchDamp: 0.3
   rollDamp: 0.28
   yawDamp: 0.1
@@ -3113,38 +3115,9 @@ MonoBehaviour:
   uprightStrength: 8
   uprightDamping: 3
   assistFadeWithInput: 0.6
-  stickAction:
-    m_Name: Stick
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: abef1a59-24a5-4149-92c8-329f94221b41
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  accelAction:
-    m_Name: Accel
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 2e88ea45-b168-4672-9144-49ca8844cd9e
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  decelAction:
-    m_Name: Decel
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: d57300c5-2619-4271-9112-30e72c7d1410
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings: []
-    m_Flags: 0
-  debugLogInputs: 1
+  debugLog: 1
   debugOnScreen: 1
-  speedUIText: {fileID: 8658910202756591610}
-  useCockpitControls: 1
-  throttle01: 0.5
+  currentSpeed: 0
 --- !u!65 &3129665375272109637
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4300,7 +4273,7 @@ Transform:
   m_GameObject: {fileID: 4821150170050424587}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.21, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4417,7 +4390,7 @@ Transform:
   m_GameObject: {fileID: 4985666741855857322}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00919}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7714,7 +7687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1680501587, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.326
+      value: 1.268
       objectReference: {fileID: 0}
     - target: {fileID: 1680501587, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7790,7 +7763,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.433
+      value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalRotation.w

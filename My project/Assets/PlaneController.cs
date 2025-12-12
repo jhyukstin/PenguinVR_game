@@ -1,10 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
 
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
-
 [RequireComponent(typeof(Rigidbody))]
 public class PlaneController : MonoBehaviour
 {
@@ -12,206 +8,139 @@ public class PlaneController : MonoBehaviour
     public Transform centerOfMass;
     private Rigidbody rb;
 
+    [Header("UI (optional)")]
+    public TextMeshProUGUI speedUIText;
+
     // -------- Speed model --------
     [Header("Speed")]
-    public float baseSpeed = 25f;        // 기본 전진 속도 (m/s)
-    public float minSpeed = 5f;         // 감속 하한
-    public float maxSpeed = 80f;        // 가속 상한
-    public float accelPerSec = 15f;      // B 누르는 동안 가속량 (m/s^2)
-    public float decelPerSec = 20f;      // A 누르는 동안 감속량 (m/s^2)
-    public float returnRate = 12f;      // 버튼 놓았을 때 baseSpeed로 복귀 속도 (m/s^2)
-    public float speedAlignRate = 9f;    // 현재 velocity를 기수 방향으로 맞추는 보정(감각 부드럽게)
-    public bool useSimpleLift = false;  // 간이 양력 사용 여부
-    public float liftScale = 1.0f;   // 간이 양력 강도(1.0부터 시작)
+    public float baseSpeed = 25f;
+    public float minSpeed = 5f;
+    public float maxSpeed = 80f;
 
-    public float currentSpeed;
+    public float accelPerSec = 15f;
+    public float decelPerSec = 20f;
+    public float returnRate = 12f;
+
+    public float speedAlignRate = 9f;
+    public bool useSimpleLift = false;
+    public float liftScale = 1.0f;
+
+    [Header("Cockpit Controls Override")]
+    public bool useCockpitControls = true;
+    [Range(0f, 1f)] public float throttle01 = 0.5f; // 0=minSpeed, 1=maxSpeed
+    public float throttleResponse = 25f;
 
     // -------- Attitude (tilt) --------
     [Header("Tilt Torques")]
-    public float pitchPower = 2200f;     // 피치 토크
-    public float rollPower = 1800f;     // 롤 토크
-    public float yawAssistWithSpeed = 0.0f; // 시험버전: Yaw는 0 (원하면 올리기)
+    public float pitchPower = 2200f;
+    public float rollPower = 1800f;
 
     [Header("Damping / Comfort")]
     public float pitchDamp = 0.30f;
     public float rollDamp = 0.28f;
     public float yawDamp = 0.10f;
-    public float autoLevel = 0.50f;      // 롤 자동 복원
-    public float maxRollDegrees = 45f;   // 롤 제한
+    public float autoLevel = 0.50f;
+    public float maxRollDegrees = 45f;
 
-    // -------- Stability Assist --------
     [Header("Stability Assist")]
-    public float inputSmoothing = 10f;   // 입력 스무딩
-    public float inputDeadzone = 0.10f; // 작은 입력 무시
-    public float maxAngularVel = 6f;    // 회전 속도 상한
-    public float pitchLeveling = 0.7f;  // 피치 수평 보정 강도
-    public float uprightStrength = 8f;   // transform.up을 세계 Up으로 돌리는 힘
-    public float uprightDamping = 3f;   // 그때의 감쇠
-    public float assistFadeWithInput = 0.6f; // 스틱을 많이 움직일수록 보조 감소(0~1)
+    public float inputSmoothing = 10f;
+    public float inputDeadzone = 0.10f;
+    public float maxAngularVel = 6f;
+    public float pitchLeveling = 0.7f;
+    public float uprightStrength = 8f;
+    public float uprightDamping = 3f;
+    public float assistFadeWithInput = 0.6f;
 
-    // -------- Input System actions --------
-#if ENABLE_INPUT_SYSTEM
-    [Header("Input Actions (auto-create if empty)")]
-    public InputAction stickAction;   // 왼손 스틱 (Vector2)
-    public InputAction accelAction;   // 오른손 B (buttonEast)
-    public InputAction decelAction;   // 오른손 A (buttonSouth)
-#endif
-
-    // -------- Debug --------
     [Header("Debug")]
-    public bool debugLogInputs = true;
+    public bool debugLog = true;
     public bool debugOnScreen = true;
 
-    // runtime
-    Vector2 _stick, _stickRaw;
-    bool _accelHeld, _decelHeld;
-    float _debugNext;
+    public float currentSpeed;
 
-    // ui object
-    public TextMeshProUGUI speedUIText;
+    // runtime inputs
+    private Vector2 _stickRaw;
+    private Vector2 _stickSmoothed;
 
-    //Cockpit Controllers
-    public bool useCockpitControls = true;
-    [Range(0f, 1f)] public float throttle01 = 0.5f;
-    Vector2 _cockpitStick;
+    // cockpit inputs (from stick/lever scripts)
+    private Vector2 _cockpitStick;
 
-    public void SetCockpitStick(Vector2 v) => _cockpitStick = Vector2.ClampMagnitude(v, 1f);
-    public void SetThrottle01(float t) { throttle01 = Mathf.Clamp01(t); }
+    public void SetCockpitStick(Vector2 v)
+    {
+        _cockpitStick = Vector2.ClampMagnitude(v, 1f);
+    }
 
+    public void SetThrottle01(float t)
+    {
+        throttle01 = Mathf.Clamp01(t);
+    }
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
         if (centerOfMass)
             rb.centerOfMass = transform.InverseTransformPoint(centerOfMass.position);
 
         rb.maxAngularVelocity = maxAngularVel;
+
         currentSpeed = Mathf.Clamp(baseSpeed, minSpeed, maxSpeed);
+        _stickRaw = Vector2.zero;
+        _stickSmoothed = Vector2.zero;
+        _cockpitStick = Vector2.zero;
     }
-
-#if ENABLE_INPUT_SYSTEM
-    void OnEnable()
-    {
-        // LEFT STICK (Vector2)
-        if (stickAction == null || stickAction.bindings.Count == 0)
-        {
-            stickAction = new InputAction("LeftStick", InputActionType.Value, expectedControlType: "Vector2");
-            // 제너릭(권장)
-            stickAction.AddBinding("<XRController>{LeftHand}/primary2DAxis");
-            // Oculus 계열(예비)
-            stickAction.AddBinding("<OculusTouchController>{LeftHand}/primary2DAxis");
-            // 레거시(예비)
-            stickAction.AddBinding("<XRController>{LeftHand}/thumbstick");
-            stickAction.AddBinding("<OculusTouchController>{LeftHand}/thumbstick");
-        }
-
-        // RIGHT B (secondaryButton)
-        if (accelAction == null || accelAction.bindings.Count == 0)
-        {
-            accelAction = new InputAction("RightB", InputActionType.Button);
-            // 제너릭(권장)
-            accelAction.AddBinding("<XRController>{RightHand}/secondaryButton");
-            // Oculus 계열(예비)
-            accelAction.AddBinding("<OculusTouchController>{RightHand}/secondaryButton");
-            // 레거시(예비)
-            accelAction.AddBinding("<XRController>{RightHand}/buttonEast");
-            accelAction.AddBinding("<OculusTouchController>{RightHand}/buttonEast");
-        }
-
-        // RIGHT A (primaryButton)
-        if (decelAction == null || decelAction.bindings.Count == 0)
-        {
-            decelAction = new InputAction("RightA", InputActionType.Button);
-            // 제너릭(권장)
-            decelAction.AddBinding("<XRController>{RightHand}/primaryButton");
-            // Oculus 계열(예비)
-            decelAction.AddBinding("<OculusTouchController>{RightHand}/primaryButton");
-            // 레거시(예비)
-            decelAction.AddBinding("<XRController>{RightHand}/buttonSouth");
-            decelAction.AddBinding("<OculusTouchController>{RightHand}/buttonSouth");
-        }
-
-
-        stickAction.Enable();
-        accelAction.Enable();
-        decelAction.Enable();
-    }
-
-    void OnDisable()
-    {
-        if (stickAction != null) stickAction.Disable();
-        if (accelAction != null) accelAction.Disable();
-        if (decelAction != null) decelAction.Disable();
-    }
-#endif
 
     void Update()
     {
-        // ---- 원시 입력 읽기 ----
-        _stickRaw = Vector2.zero;
-        _accelHeld = _decelHeld = false;
-
-#if ENABLE_INPUT_SYSTEM
-        if (stickAction != null && stickAction.enabled) _stickRaw = stickAction.ReadValue<Vector2>();
-        if (accelAction != null && accelAction.enabled) _accelHeld = accelAction.IsPressed();
-        if (decelAction != null && decelAction.enabled) _decelHeld = decelAction.IsPressed();
-
-        // (선택) 키보드 백업도 새 Input System으로 처리 (에디터 테스트용)
-        if (Keyboard.current != null)
+        // ✅ cockpit 입력 덮어쓰기
+        if (useCockpitControls)
         {
-            var kb = Keyboard.current;
-            float sx = (kb.dKey.isPressed ? 1f : 0f) - (kb.aKey.isPressed ? 1f : 0f);
-            float sy = (kb.wKey.isPressed ? 1f : 0f) - (kb.sKey.isPressed ? 1f : 0f);
-            if (Mathf.Abs(sx) > 0f || Mathf.Abs(sy) > 0f)
-                _stickRaw = new Vector2(sx, sy);
-
-            _accelHeld |= kb.rKey.isPressed; // R = 가속
-            _decelHeld |= kb.fKey.isPressed; // F = 감속
+            _stickRaw = _cockpitStick;
         }
-#endif
-        _stickRaw = Vector2.ClampMagnitude(_stickRaw, 1f);
+        else
+        {
+            // (여기엔 컨트롤러/키보드 입력을 넣어도 되지만)
+            _stickRaw = Vector2.zero;
+        }
 
-        // ---- 데드존 + 입력 스무딩 ----
+        // deadzone
         Vector2 dz = new Vector2(
             Mathf.Abs(_stickRaw.x) < inputDeadzone ? 0f : _stickRaw.x,
             Mathf.Abs(_stickRaw.y) < inputDeadzone ? 0f : _stickRaw.y
         );
-        _stick = Vector2.Lerp(_stick, dz, 1f - Mathf.Exp(-inputSmoothing * Time.deltaTime));
 
-        // ---- 디버그 로그 (스팸 방지 5fps) ----
-        if (debugLogInputs && Time.time >= _debugNext)
-        {
-            _debugNext = Time.time + 0.2f;
-            float v = rb ? rb.linearVelocity.magnitude : 0f;
-            Debug.Log($"[Plane] stick=({_stick.x:F2},{_stick.y:F2})  accel={_accelHeld} decel={_decelHeld}  speed={currentSpeed:F1}  vel={v:F1}");
-        }
+        // smoothing
+        _stickSmoothed = Vector2.Lerp(_stickSmoothed, dz, 1f - Mathf.Exp(-inputSmoothing * Time.deltaTime));
 
-        speedUIText.text = currentSpeed.ToString("F0");
+        if (speedUIText) speedUIText.text = currentSpeed.ToString("F0");
     }
 
     void FixedUpdate()
     {
         float dt = Time.fixedDeltaTime;
 
-        // 1) 속도 업데이트: B(가속) / A(감속) / 기본속도 복귀
-        if (_accelHeld && !_decelHeld)
-            currentSpeed = Mathf.Min(maxSpeed, currentSpeed + accelPerSec * dt);
-        else if (_decelHeld && !_accelHeld)
-            currentSpeed = Mathf.Max(minSpeed, currentSpeed - decelPerSec * dt);
+        // 1) Speed update
+        if (useCockpitControls)
+        {
+            float targetSpeed = Mathf.Lerp(minSpeed, maxSpeed, throttle01);
+            currentSpeed = MoveToward(currentSpeed, targetSpeed, throttleResponse * dt);
+        }
         else
+        {
+            // fallback: baseSpeed 유지
             currentSpeed = MoveToward(currentSpeed, baseSpeed, returnRate * dt);
+        }
 
-        // 2) 스틱 → 기울기 입력
+        // 2) Stick -> pitch/roll inputs
         float speed = rb.linearVelocity.magnitude;
-        float ctlScale = Mathf.Clamp01(speed / 20f); // 저속에서 과조작 방지
-        float rollIn = Mathf.Clamp(_stick.x, -1f, 1f);
-        float pitchIn = Mathf.Clamp(-_stick.y, -1f, 1f); // 앞 밀면 코내림 → 음수
+        float ctlScale = Mathf.Clamp01(speed / 20f);
 
-        // 3) 토크 계산
+        float rollIn = Mathf.Clamp(_stickSmoothed.x, -1f, 1f);
+        float pitchIn = Mathf.Clamp(-_stickSmoothed.y, -1f, 1f);
+
+        // 3) Torque
         Vector3 angVel = rb.angularVelocity;
         Vector3 localAng = transform.InverseTransformDirection(angVel);
 
-        // 피치 수평 보정(너무 들거나 숙이면 천천히 수평으로)
         float noseUpDeg = Vector3.SignedAngle(
             Vector3.ProjectOnPlane(transform.forward, Vector3.up),
             transform.forward,
@@ -225,26 +154,27 @@ public class PlaneController : MonoBehaviour
             (transform.forward * (-rollIn * rollPower * ctlScale)) +
             pitchLevelTorque;
 
-        // 댐핑
+        // damping
         torque += -transform.right * (localAng.x * pitchDamp * rb.mass);
         torque += -transform.forward * (localAng.z * rollDamp * rb.mass);
         torque += -transform.up * (localAng.y * yawDamp * rb.mass);
 
-        // 롤 자동 레벨링(수평 기준)
+        // auto level roll
         Vector3 flatRight = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
         float rollTilt = Vector3.SignedAngle(flatRight, transform.right, transform.forward) * Mathf.Deg2Rad;
         torque += -transform.forward * (rollTilt * autoLevel * rb.mass);
 
         rb.AddTorque(torque, ForceMode.Force);
 
-        // 4) Upright 보정: transform.up을 세계 Up으로 맞춤 (입력 많을수록 보조 축소)
-        float inputMag = Mathf.Clamp01(new Vector2(_stick.x, _stick.y).magnitude);
+        // upright assist (fade with input)
+        float inputMag = Mathf.Clamp01(_stickSmoothed.magnitude);
         float assistScale = 1f - inputMag * assistFadeWithInput;
-        Vector3 upError = Vector3.Cross(transform.up, Vector3.up); // 회전해야 할 축
+
+        Vector3 upError = Vector3.Cross(transform.up, Vector3.up);
         Vector3 uprightTorque = upError * (uprightStrength * rb.mass) - rb.angularVelocity * uprightDamping;
         rb.AddTorque(uprightTorque * assistScale, ForceMode.Force);
 
-        // 5) 롤 각도 제한(멀미 방지)
+        // roll limit
         float rollDeg = Mathf.DeltaAngle(0f, transform.rotation.eulerAngles.z);
         if (Mathf.Abs(rollDeg) > maxRollDegrees)
         {
@@ -252,27 +182,35 @@ public class PlaneController : MonoBehaviour
             rb.AddTorque(transform.forward * -excess * 20f, ForceMode.Force);
         }
 
-        // 6) 전진 속도 적용 (기수 방향으로 정렬)
+        // 4) Forward velocity
         Vector3 targetVel = transform.forward * currentSpeed;
         rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVel, 1f - Mathf.Exp(-speedAlignRate * dt));
 
-        // 7) (옵션) 간이 양력: 속도 비례로 중력 상쇄 보조
+        // 5) Simple lift (optional)
         if (useSimpleLift)
         {
-            float liftFactor = Mathf.Clamp01(rb.linearVelocity.magnitude / baseSpeed);
+            float liftFactor = Mathf.Clamp01(rb.linearVelocity.magnitude / Mathf.Max(0.01f, baseSpeed));
             Vector3 simpleLift = Vector3.up * (rb.mass * Physics.gravity.magnitude) * liftFactor * liftScale;
             rb.AddForce(simpleLift, ForceMode.Force);
+        }
+
+        // Debug
+        if (debugLog && Time.frameCount % 30 == 0)
+        {
+            Debug.Log($"[PlaneController:{name}] stick={_cockpitStick} throttle01={throttle01:F2} speed={currentSpeed:F1} rbVel={rb.linearVelocity.magnitude:F1}");
         }
     }
 
     void OnGUI()
     {
         if (!debugOnScreen) return;
+
         var style = new GUIStyle(GUI.skin.label) { fontSize = 16 };
-        GUILayout.BeginArea(new Rect(10, 10, 360, 110), GUI.skin.box);
-        GUILayout.Label($"Stick X:{_stick.x:F2}  Y:{_stick.y:F2}", style);
-        GUILayout.Label($"Accel(B):{_accelHeld}  Decel(A):{_decelHeld}", style);
-        GUILayout.Label($"Speed:{currentSpeed:F1}  Vel:{rb.linearVelocity.magnitude:F1}", style);
+        GUILayout.BeginArea(new Rect(10, 10, 520, 120), GUI.skin.box);
+        GUILayout.Label($"PlaneController: {name}", style);
+        GUILayout.Label($"useCockpitControls: {useCockpitControls}", style);
+        GUILayout.Label($"cockpitStick: {_cockpitStick.x:F2}, {_cockpitStick.y:F2}", style);
+        GUILayout.Label($"throttle01: {throttle01:F2}  currentSpeed: {currentSpeed:F1}  rbVel: {rb.linearVelocity.magnitude:F1}", style);
         GUILayout.EndArea();
     }
 

@@ -1,50 +1,55 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
+[RequireComponent(typeof(XRGrabInteractable))]
 public class CockpitLeverDirectDrive : MonoBehaviour
 {
     [Header("Refs")]
-    public PlaneController plane;
-    public UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab;
-    public Transform leverBone;          // Armature 안 레버 Bone
-    public Transform visualRootToLock;   // 보통 this.transform
+    public PlaneController plane;     // 비워도 됨(자동 찾기)
+    public XRGrabInteractable grab;
+    public Transform leverBone;       // Armature 안 lever bone
 
-    [Header("Pull/Push Mapping")]
-    public Transform leverBase;          // 기준점(없으면 this.transform)
-    public Vector3 localAxis = Vector3.forward; // 밀고/당기는 축(leverBase 로컬)
-    public float minAlong = -0.06f;      // 당김(감속)
-    public float maxAlong = 0.06f;      // 밀기(가속)
+    [Header("Lever Base (reference)")]
+    public Transform leverBase;       // 보통 이 오브젝트 or 레버 베이스
+    public Vector3 localAxis = Vector3.forward; // 당김/밀기 축 (leverBase 로컬)
+
+    [Header("Along Range (meters, local)")]
+    public float minAlong = -0.12f;   // 당김(감속)
+    public float maxAlong = 0.12f;    // 밀기(가속)
+
+    [Header("Smoothing")]
     public float smoothing = 15f;
 
-    [Header("Lever Visual Rotation (optional)")]
-    public Vector3 leverRotAxis = Vector3.right; // 레버가 도는 축(leverBone 로컬)
-    public float minDeg = -30f;                  // 당김 각도
-    public float maxDeg = 30f;                  // 밀기 각도
+    [Header("Visual Rotation (bone)")]
+    public Vector3 leverRotAxis = Vector3.right;
+    public float minDeg = -30f;
+    public float maxDeg = 30f;
+
+    [Header("Lock Interactable Transform")]
+    public bool lockThisTransform = true;
 
     Transform _lockParent;
     Vector3 _lockLocalPos;
     Quaternion _lockLocalRot;
 
-    UnityEngine.XR.Interaction.Toolkit.Interactors.IXRSelectInteractor _interactor;
+    IXRSelectInteractor _interactor;
     Quaternion _boneNeutral;
-    float _outT;
-
-    void Reset()
-    {
-        grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        visualRootToLock = transform;
-        leverBase = transform;
-    }
+    float _outT = 0.5f;
 
     void Awake()
     {
-        if (!grab) grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        if (!visualRootToLock) visualRootToLock = transform;
+        grab = GetComponent<XRGrabInteractable>();
+
+        if (!plane)
+            plane = GetComponentInParent<PlaneController>() ?? FindObjectOfType<PlaneController>();
+
         if (!leverBase) leverBase = transform;
 
-        _lockParent = visualRootToLock.parent;
-        _lockLocalPos = visualRootToLock.localPosition;
-        _lockLocalRot = visualRootToLock.localRotation;
+        _lockParent = transform.parent;
+        _lockLocalPos = transform.localPosition;
+        _lockLocalRot = transform.localRotation;
 
         if (leverBone) _boneNeutral = leverBone.localRotation;
     }
@@ -65,47 +70,56 @@ public class CockpitLeverDirectDrive : MonoBehaviour
     {
         _interactor = args.interactorObject;
         if (leverBone) _boneNeutral = leverBone.localRotation;
+
+        if (Time.frameCount % 10 == 0)
+            Debug.Log($"[LeverDrive:{name}] GRAB -> Plane={(plane ? plane.name : "NULL")}");
     }
 
     void OnRelease(SelectExitEventArgs args)
     {
         _interactor = null;
         LockBack();
-        // 레버는 보통 "현재 스로틀 유지"가 자연스러움 → throttle01 유지
-        // 원하면 중립 복귀하려면 여기서 SetThrottle01(0.5f) 같은 거 하면 됨
+
+        if (Time.frameCount % 10 == 0)
+            Debug.Log($"[LeverDrive:{name}] RELEASE -> Plane={(plane ? plane.name : "NULL")}");
     }
 
     void LateUpdate()
     {
-        LockBack();
-
+        if (lockThisTransform) LockBack();
         if (!plane || !leverBone || _interactor == null) return;
 
-        var attach = _interactor.GetAttachTransform(grab);
+        Transform attach = _interactor.GetAttachTransform(grab);
         if (!attach) return;
 
-        // leverBase 기준으로 손이 축 방향으로 얼마나 이동했는지(당김/밀기)
         Vector3 axis = localAxis.normalized;
+
+        // leverBase 로컬에서 손 위치를 측정해서 축방향으로 얼마나 밀/당겼는지 계산
         Vector3 localHandPos = leverBase.InverseTransformPoint(attach.position);
         float along = Vector3.Dot(localHandPos, axis);
 
-        // clamp & normalize
-        along = Mathf.Clamp(along, Mathf.Min(minAlong, maxAlong), Mathf.Max(minAlong, maxAlong));
-        float t = Mathf.InverseLerp(minAlong, maxAlong, along); // 0..1
+        float lo = Mathf.Min(minAlong, maxAlong);
+        float hi = Mathf.Max(minAlong, maxAlong);
+        along = Mathf.Clamp(along, lo, hi);
+
+        float t = Mathf.InverseLerp(minAlong, maxAlong, along);
 
         _outT = Mathf.Lerp(_outT, t, 1f - Mathf.Exp(-smoothing * Time.deltaTime));
         plane.SetThrottle01(_outT);
 
-        // 레버 시각 회전(선택): throttle에 따라 bone 회전
         float deg = Mathf.Lerp(minDeg, maxDeg, _outT);
         leverBone.localRotation = _boneNeutral * Quaternion.AngleAxis(deg, leverRotAxis.normalized);
+
+        if (Time.frameCount % 30 == 0)
+            Debug.Log($"[LeverDrive:{name}] -> Plane={plane.name} throttle01={_outT:F2} (along={along:F3})");
     }
 
     void LockBack()
     {
-        if (!visualRootToLock) return;
-        if (visualRootToLock.parent != _lockParent) visualRootToLock.SetParent(_lockParent, false);
-        visualRootToLock.localPosition = _lockLocalPos;
-        visualRootToLock.localRotation = _lockLocalRot;
+        if (_lockParent && transform.parent != _lockParent)
+            transform.SetParent(_lockParent, false);
+
+        transform.localPosition = _lockLocalPos;
+        transform.localRotation = _lockLocalRot;
     }
 }
