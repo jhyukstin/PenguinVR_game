@@ -70,6 +70,15 @@ public class PlaneController : MonoBehaviour
     // ui object
     public TextMeshProUGUI speedUIText;
 
+    //Cockpit Controllers
+    public bool useCockpitControls = true;
+    [Range(0f, 1f)] public float throttle01 = 0.5f;
+    Vector2 _cockpitStick;
+
+    public void SetCockpitStick(Vector2 v) => _cockpitStick = Vector2.ClampMagnitude(v, 1f);
+    public void SetThrottle01(float t) { throttle01 = Mathf.Clamp01(t); }
+
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
