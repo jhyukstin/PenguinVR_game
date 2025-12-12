@@ -275,6 +275,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1162631051346548677, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2263242079373167759, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
       propertyPath: far clip plane
       value: 983.6
@@ -343,6 +347,22 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3860337207035527829, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3974783371639702213, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 3974783371639702213, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 3974783371639702213, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 3985008313867171113, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
       propertyPath: m_Name
       value: PLANEROOT_DEMO
@@ -395,11 +415,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9002461676443471269, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 9002461676443471269, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 9002461676443471269, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.01
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1268630440865293514, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 1408772592}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+--- !u!1 &50800153 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1162631051346548677, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+  m_PrefabInstance: {fileID: 50800152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &50800154 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1268630440865293514, guid: 51ae3b099bd4fc9418768a312474f51d, type: 3}
+  m_PrefabInstance: {fileID: 50800152}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &53886920
 GameObject:
   m_ObjectHideFlags: 0
@@ -1345,7 +1390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   penguinHP: 3
-  babyPenguinLoseScreen: {fileID: 2074865178}
+  babyPenguinLoseScreen: {fileID: 1408772591}
 --- !u!65 &134894308
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6689,37 +6734,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9b793716aab852e45b32bdecded58a9f, type: 3}
   m_PrefabInstance: {fileID: 1196979154}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1211452318
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1211452319}
-  m_Layer: 0
-  m_Name: WIP - WinEndingScreen
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1211452319
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1211452318}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.44427115, y: 0.6430959, z: 2.1935968}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1211924879
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7331,7 +7345,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1408772592
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7341,11 +7355,11 @@ RectTransform:
   m_GameObject: {fileID: 1408772591}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 245923452}
-  m_Father: {fileID: 2074865179}
+  m_Father: {fileID: 50800154}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10592,38 +10606,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37c28203755cc6b4ba4e27224e465f48, type: 3}
---- !u!1 &2074865178
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2074865179}
-  m_Layer: 0
-  m_Name: WIP - BabyPenguinLoseEndingScreen
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2074865179
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2074865178}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1408772592}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2084496857
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11481,7 +11463,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyHP: 10
   enemySpeed: 1
-  WinScreen: {fileID: 1211452318}
+  WinScreen: {fileID: 50800153}
 --- !u!1001 &2131050514
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11638,8 +11620,6 @@ SceneRoots:
   - {fileID: 705507995}
   - {fileID: 55897850}
   - {fileID: 1487051095}
-  - {fileID: 2074865179}
-  - {fileID: 1211452319}
   - {fileID: 1727204318}
   - {fileID: 1709905891}
   - {fileID: 2064075626}
