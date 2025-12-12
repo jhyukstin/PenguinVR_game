@@ -11,6 +11,7 @@ public class SnowballDamage : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+       
         // Enemy HP decrease
         EnemyInfo enemy = collision.gameObject.GetComponent<EnemyInfo>();
         if (enemy != null)

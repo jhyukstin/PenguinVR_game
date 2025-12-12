@@ -8,10 +8,15 @@ public class GunOnPlane : MonoBehaviour
     Rigidbody rb;
     UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab;
 
+    Vector3 originalLocalPos;
+    Quaternion originalLocalRot;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+
+        originalLocalPos = transform.localPosition;
+        originalLocalRot = transform.localRotation;
 
         // Resting on plane = follow plane, no physics forces
         rb.isKinematic = true;
@@ -31,7 +36,7 @@ public class GunOnPlane : MonoBehaviour
         // When released, snap back to plane and stick on it again
         rb.isKinematic = true;
         // Optional: reset local position/rotation so it goes back to its slot
-        // transform.localPosition = originalLocalPos;
-        // transform.localRotation = originalLocalRot;
+        transform.localPosition = originalLocalPos;
+        transform.localRotation = originalLocalRot;
     }
 }
