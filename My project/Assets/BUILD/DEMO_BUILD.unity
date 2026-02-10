@@ -6120,6 +6120,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 699275144385905700, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1975293672118862604, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: smoothing
       value: 15
