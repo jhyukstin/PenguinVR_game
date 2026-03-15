@@ -141,6 +141,7 @@ GameObject:
   - component: {fileID: 1425723966535268600}
   - component: {fileID: 2145402982256735610}
   - component: {fileID: 1975293672118862604}
+  - component: {fileID: 1975293672118862605}
   m_Layer: 0
   m_Name: Stick Interactable
   m_TagString: Untagged
@@ -354,6 +355,29 @@ MonoBehaviour:
   maxRollDeg: 25
   smoothing: 20
   lockThisTransform: 1
+--- !u!114 &1975293672118862605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489359926006516285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e9b4029e9ff4a17bd1827e8a9160df0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grabInteractable: {fileID: 2145402982256735610}
+  defaultAttach: {fileID: 637869673000135790}
+  leftAttach: {fileID: 0}
+  rightAttach: {fileID: 0}
+  snapHumanoidHands: 1
+  humanoidBinder: {fileID: 2462014940461979637}
+  leftHandTarget: {fileID: 6205152288309367077}
+  rightHandTarget: {fileID: 5383338475944165632}
+  snapControllerVisuals: 0
+  leftControllerVisual: {fileID: 0}
+  rightControllerVisual: {fileID: 0}
 --- !u!1 &525347222669338675
 GameObject:
   m_ObjectHideFlags: 0
@@ -863,6 +887,7 @@ GameObject:
   - component: {fileID: 4059478528591845987}
   - component: {fileID: 6920962992297159810}
   - component: {fileID: 4247377414910950334}
+  - component: {fileID: 4247377414910950335}
   m_Layer: 0
   m_Name: Lever Interactable
   m_TagString: Untagged
@@ -1081,6 +1106,29 @@ MonoBehaviour:
   minDeg: -30
   maxDeg: 30
   lockThisTransform: 1
+--- !u!114 &4247377414910950335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719109170363145651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e9b4029e9ff4a17bd1827e8a9160df0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grabInteractable: {fileID: 6920962992297159810}
+  defaultAttach: {fileID: 3411591671463985741}
+  leftAttach: {fileID: 0}
+  rightAttach: {fileID: 0}
+  snapHumanoidHands: 1
+  humanoidBinder: {fileID: 2462014940461979637}
+  leftHandTarget: {fileID: 6205152288309367077}
+  rightHandTarget: {fileID: 5383338475944165632}
+  snapControllerVisuals: 0
+  leftControllerVisual: {fileID: 0}
+  rightControllerVisual: {fileID: 0}
 --- !u!1 &737181865279427630
 GameObject:
   m_ObjectHideFlags: 0
