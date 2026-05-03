@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/BUILD/CutScene.unity
     guid: f5d6ca4645ddec54685bcdebc5ba59f1
+  - enabled: 1
+    path: Assets/CutScene_Ocean.unity
+    guid: 6a481896e569c794587b208c9cd05778
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 561920a0225c3ca468ba97c3e6d60da2, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

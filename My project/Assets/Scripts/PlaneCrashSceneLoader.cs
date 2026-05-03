@@ -11,6 +11,8 @@ public class PlaneCrashSceneLoader : MonoBehaviour
 
     [Header("Scene")]
     [SerializeField] private string sceneToLoad = "Cutscene";
+    [SerializeField] private GameObject oceanObject;
+    [SerializeField] private string oceanSceneToLoad = "CutScene_Ocean";
     [SerializeField] private float loadDelay = 0f;
 
     [Header("Crash Behavior")]
@@ -82,6 +84,11 @@ public class PlaneCrashSceneLoader : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other != null && other.transform.IsChildOf(transform))
+        {
+            return;
+        }
+
         TryHandleCrash(other, "trigger");
     }
 
@@ -97,13 +104,15 @@ public class PlaneCrashSceneLoader : MonoBehaviour
             Debug.Log($"PlaneCrashSceneLoader saw {source} with {other.name}");
         }
 
-        if (!IsIceWall(other.transform))
+        string targetScene = GetSceneForCrash(other.transform);
+
+        if (string.IsNullOrWhiteSpace(targetScene))
         {
             return;
         }
 
         hasCrashed = true;
-        Debug.Log($"Plane crashed into {other.name}. Loading scene: {sceneToLoad}");
+        Debug.Log($"Plane crashed into {other.name}. Loading scene: {targetScene}");
 
         if (disablePlaneControllerOnCrash && TryGetComponent(out PlaneController planeController))
         {
@@ -117,7 +126,27 @@ public class PlaneCrashSceneLoader : MonoBehaviour
             rb.isKinematic = true;
         }
 
-        StartCoroutine(LoadSceneAfterDelay());
+        StartCoroutine(LoadSceneAfterDelay(targetScene));
+    }
+
+    private string GetSceneForCrash(Transform hitTransform)
+    {
+        if (IsOcean(hitTransform))
+        {
+            return oceanSceneToLoad;
+        }
+
+        if (IsIceWall(hitTransform))
+        {
+            return sceneToLoad;
+        }
+
+        return null;
+    }
+
+    private bool IsOcean(Transform hitTransform)
+    {
+        return oceanObject != null && hitTransform.IsChildOf(oceanObject.transform);
     }
 
     private bool IsIceWall(Transform hitTransform)
@@ -138,26 +167,26 @@ public class PlaneCrashSceneLoader : MonoBehaviour
         return false;
     }
 
-    private IEnumerator LoadSceneAfterDelay()
+    private IEnumerator LoadSceneAfterDelay(string targetScene)
     {
         if (loadDelay > 0f)
         {
             yield return new WaitForSeconds(loadDelay);
         }
 
-        if (string.IsNullOrWhiteSpace(sceneToLoad))
+        if (string.IsNullOrWhiteSpace(targetScene))
         {
             Debug.LogWarning("PlaneCrashSceneLoader: No scene name set.");
             yield break;
         }
 
-        if (!Application.CanStreamedLevelBeLoaded(sceneToLoad))
+        if (!Application.CanStreamedLevelBeLoaded(targetScene))
         {
-            Debug.LogError($"PlaneCrashSceneLoader: Scene '{sceneToLoad}' is not in Build Settings yet.");
+            Debug.LogError($"PlaneCrashSceneLoader: Scene '{targetScene}' is not in Build Settings yet.");
             yield break;
         }
 
-        SceneManager.LoadScene(sceneToLoad);
+        SceneManager.LoadScene(targetScene);
     }
 
     private static Vector3 Abs(Vector3 value)
