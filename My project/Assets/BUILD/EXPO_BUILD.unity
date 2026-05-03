@@ -10675,7 +10675,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3640855515743898942, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.24
+      value: 156.8
       objectReference: {fileID: 0}
     - target: {fileID: 3640855515743898942, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10792,6 +10792,18 @@ PrefabInstance:
     - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: sceneToLoad
       value: CutScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
+      propertyPath: rollPower
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
+      propertyPath: pitchPower
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
+      propertyPath: inputSmoothing
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7962005883058435726, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: m_Enabled
