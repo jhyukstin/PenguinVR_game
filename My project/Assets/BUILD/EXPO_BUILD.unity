@@ -10814,13 +10814,13 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
-      propertyPath: oceanObject
-      value: 
-      objectReference: {fileID: 660332016}
-    - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: enemyInfo
       value: 
       objectReference: {fileID: 2126763830}
+    - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
+      propertyPath: oceanObject
+      value: 
+      objectReference: {fileID: 660332016}
     - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: sceneToLoad
       value: CutScene
@@ -10831,7 +10831,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: rollPower
-      value: 400
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: pitchPower
@@ -20837,6 +20837,7 @@ MonoBehaviour:
   enemyHP: 10
   enemySpeed: 1
   WinScreen: {fileID: 1164368525}
+  win: 0
 --- !u!1001 &2128423026
 PrefabInstance:
   m_ObjectHideFlags: 0
