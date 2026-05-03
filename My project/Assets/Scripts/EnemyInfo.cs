@@ -5,10 +5,14 @@ public class EnemyInfo : MonoBehaviour
     public float enemyHP = 20f;
     public float enemySpeed = 1.0f;
     public GameObject WinScreen;
+    public bool win;
 
     private void Start()
     {
-        WinScreen.SetActive(false);
+        win = false;
+
+        if (WinScreen)
+            WinScreen.SetActive(false);
     }
     public void TakeDamage(int damageAmount)
     {
@@ -22,7 +26,13 @@ public class EnemyInfo : MonoBehaviour
 
     void Die()
     {
+        if (win)
+            return;
+
+        win = true;
         Debug.Log("Player Wins");
-        WinScreen.SetActive(true);
+
+        if (WinScreen)
+            WinScreen.SetActive(true);
     }
 }

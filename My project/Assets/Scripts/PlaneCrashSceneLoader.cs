@@ -13,6 +13,8 @@ public class PlaneCrashSceneLoader : MonoBehaviour
     [SerializeField] private string sceneToLoad = "Cutscene";
     [SerializeField] private GameObject oceanObject;
     [SerializeField] private string oceanSceneToLoad = "CutScene_Ocean";
+    [SerializeField] private EnemyInfo enemyInfo;
+    [SerializeField] private string winSceneToLoad = "WinCutScene";
     [SerializeField] private float loadDelay = 0f;
 
     [Header("Crash Behavior")]
@@ -36,6 +38,31 @@ public class PlaneCrashSceneLoader : MonoBehaviour
         {
             Debug.Log($"PlaneCrashSceneLoader ready on {name}. Crash collider: {(crashCollider ? crashCollider.name : "None")}");
         }
+    }
+
+    private void Start()
+    {
+        if (enemyInfo == null)
+        {
+            enemyInfo = FindObjectOfType<EnemyInfo>();
+        }
+    }
+
+    private void Update()
+    {
+        if (hasCrashed || enemyInfo == null || !enemyInfo.win)
+        {
+            return;
+        }
+
+        hasCrashed = true;
+
+        if (debugLog)
+        {
+            Debug.Log($"PlaneCrashSceneLoader detected win. Loading scene: {winSceneToLoad}");
+        }
+
+        StartCoroutine(LoadSceneAfterDelay(winSceneToLoad));
     }
 
     private void FixedUpdate()

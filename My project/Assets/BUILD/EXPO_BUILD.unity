@@ -10818,8 +10818,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 660332016}
     - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
+      propertyPath: enemyInfo
+      value: 
+      objectReference: {fileID: 2126763830}
+    - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: sceneToLoad
       value: CutScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 7269432342051239821, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
+      propertyPath: winSceneToLoad
+      value: WinCutScene
       objectReference: {fileID: 0}
     - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: rollPower

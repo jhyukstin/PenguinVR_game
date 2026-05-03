@@ -3184,6 +3184,8 @@ MonoBehaviour:
   sceneToLoad: Cutscene
   oceanObject: {fileID: 0}
   oceanSceneToLoad: CutScene_Ocean
+  enemyInfo: {fileID: 0}
+  winSceneToLoad: WinCutScene
   loadDelay: 0
   crashCollider: {fileID: 3129665375272109637}
   stopPlaneOnCrash: 1
