@@ -3182,6 +3182,8 @@ MonoBehaviour:
   wallParentName: Walls
   wallNamePrefix: Ice Wall
   sceneToLoad: Cutscene
+  oceanObject: {fileID: 0}
+  oceanSceneToLoad: CutScene_Ocean
   loadDelay: 0
   crashCollider: {fileID: 3129665375272109637}
   stopPlaneOnCrash: 1
