@@ -4,6 +4,7 @@ using UnityEngine;
 public class ScoreSystem : MonoBehaviour
 {
     private const string BEST_SCORE_KEY = "BEST_SCORE";
+    private const string CURRENT_SCORE_KEY = "CURRENT_SCORE";
 
     [Header("Score Settings")]
     [SerializeField] private float maxScore = 1000f;
@@ -21,6 +22,8 @@ public class ScoreSystem : MonoBehaviour
 
     public int CurrentScore { get; private set; }
     public int BestScore => PlayerPrefs.GetInt(BEST_SCORE_KEY, 0);
+    public static int SavedCurrentScore => PlayerPrefs.GetInt(CURRENT_SCORE_KEY, 0);
+    public static int SavedBestScore => PlayerPrefs.GetInt(BEST_SCORE_KEY, 0);
 
     private void Start()
     {
@@ -54,6 +57,7 @@ public class ScoreSystem : MonoBehaviour
     public bool SubmitScore(float timeSeconds)
     {
         CurrentScore = CalculateScore(timeSeconds);
+        PlayerPrefs.SetInt(CURRENT_SCORE_KEY, CurrentScore);
 
         if (CurrentScore > BestScore)
         {
@@ -65,6 +69,7 @@ public class ScoreSystem : MonoBehaviour
             return true;
         }
 
+        PlayerPrefs.Save();
         UpdateScoreUI();
         return false;
     }
