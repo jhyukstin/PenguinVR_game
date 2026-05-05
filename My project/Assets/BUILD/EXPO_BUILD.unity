@@ -4770,7 +4770,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: rollPower
-      value: 300
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: pitchPower
@@ -4778,7 +4778,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: bankTurnPower
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7929315391096791188, guid: e9ef4cb53267c234a80031b774e35b4e, type: 3}
       propertyPath: inputSmoothing
