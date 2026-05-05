@@ -16,6 +16,7 @@ public class BulletShoot : MonoBehaviour
     [Header("SFX")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip shootSFX;
+    [SerializeField] private AudioClip pickupSFX;
 
     private InputSystem_Actions input;
     private bool isHeld;
@@ -25,9 +26,10 @@ public class BulletShoot : MonoBehaviour
         input = new InputSystem_Actions();
 
         if (!grabInteractable)
-        {
             grabInteractable = GetComponent<XRGrabInteractable>();
-        }
+
+        if (!audioSource)
+            audioSource = GetComponent<AudioSource>();
 
         if (grabInteractable)
         {
@@ -60,6 +62,11 @@ public class BulletShoot : MonoBehaviour
     private void OnGrabbed(SelectEnterEventArgs args)
     {
         isHeld = true;
+
+        if (audioSource && pickupSFX)
+        {
+            audioSource.PlayOneShot(pickupSFX);
+        }
     }
 
     private void OnReleased(SelectExitEventArgs args)
@@ -70,9 +77,7 @@ public class BulletShoot : MonoBehaviour
     private void OnShoot(InputAction.CallbackContext ctx)
     {
         if (!isHeld)
-        {
             return;
-        }
 
         Shoot();
     }
