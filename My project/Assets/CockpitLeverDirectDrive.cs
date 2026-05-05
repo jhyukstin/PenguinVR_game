@@ -7,17 +7,17 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 public class CockpitLeverDirectDrive : MonoBehaviour
 {
     [Header("Refs")]
-    public PlaneController plane;     // 비워도 됨(자동 찾기)
+    public PlaneController plane;
     public XRGrabInteractable grab;
-    public Transform leverBone;       // Armature 안 lever bone
+    public Transform leverBone;
 
     [Header("Lever Base (reference)")]
-    public Transform leverBase;       // 보통 이 오브젝트 or 레버 베이스
-    public Vector3 localAxis = Vector3.forward; // 당김/밀기 축 (leverBase 로컬)
+    public Transform leverBase;
+    public Vector3 localAxis = Vector3.forward;
 
     [Header("Along Range (meters, local)")]
-    public float minAlong = -0.12f;   // 당김(감속)
-    public float maxAlong = 0.12f;    // 밀기(가속)
+    public float minAlong = -0.12f;
+    public float maxAlong = 0.12f;
 
     [Header("Smoothing")]
     public float smoothing = 15f;
@@ -26,6 +26,15 @@ public class CockpitLeverDirectDrive : MonoBehaviour
     public Vector3 leverRotAxis = Vector3.right;
     public float minDeg = -30f;
     public float maxDeg = 30f;
+
+    [Header("SFX")]
+    [SerializeField] private AudioSource accelerateAudioSource;
+    [SerializeField] private AudioSource decelerateAudioSource;
+    [SerializeField] private AudioClip accelerateSFX;
+    [SerializeField] private AudioClip decelerateSFX;
+    [SerializeField] private float sfxThreshold = 0.06f;
+    [SerializeField] private float sfxCooldown = 0.2f;
+    [SerializeField] private bool invertSFXDirection = false;
 
     [Header("Lock Interactable Transform")]
     public bool lockThisTransform = true;
@@ -38,6 +47,9 @@ public class CockpitLeverDirectDrive : MonoBehaviour
     Quaternion _boneNeutral;
     float _outT = 0.5f;
 
+    float _lastSfxTime = -999f;
+    int _lastDirection = 0; // 1 = accelerate, -1 = decelerate
+
     void Awake()
     {
         grab = GetComponent<XRGrabInteractable>();
@@ -45,13 +57,18 @@ public class CockpitLeverDirectDrive : MonoBehaviour
         if (!plane)
             plane = GetComponentInParent<PlaneController>() ?? FindObjectOfType<PlaneController>();
 
-        if (!leverBase) leverBase = transform;
+        if (!leverBase)
+            leverBase = transform;
+
+        if (!accelerateAudioSource)
+            accelerateAudioSource = GetComponent<AudioSource>();
 
         _lockParent = transform.parent;
         _lockLocalPos = transform.localPosition;
         _lockLocalRot = transform.localRotation;
 
-        if (leverBone) _boneNeutral = leverBone.localRotation;
+        if (leverBone)
+            _boneNeutral = leverBone.localRotation;
     }
 
     void OnEnable()
@@ -69,32 +86,35 @@ public class CockpitLeverDirectDrive : MonoBehaviour
     void OnGrab(SelectEnterEventArgs args)
     {
         _interactor = args.interactorObject;
-        if (leverBone) _boneNeutral = leverBone.localRotation;
 
-        if (Time.frameCount % 10 == 0)
-            Debug.Log($"[LeverDrive:{name}] GRAB -> Plane={(plane ? plane.name : "NULL")}");
+        if (leverBone)
+            _boneNeutral = leverBone.localRotation;
+
+        _lastDirection = 0;
     }
 
     void OnRelease(SelectExitEventArgs args)
     {
         _interactor = null;
+        _lastDirection = 0;
+        StopThrottleSFX();
         LockBack();
-
-        if (Time.frameCount % 10 == 0)
-            Debug.Log($"[LeverDrive:{name}] RELEASE -> Plane={(plane ? plane.name : "NULL")}");
     }
 
     void LateUpdate()
     {
-        if (lockThisTransform) LockBack();
-        if (!plane || !leverBone || _interactor == null) return;
+        if (lockThisTransform)
+            LockBack();
+
+        if (!plane || !leverBone || _interactor == null)
+            return;
 
         Transform attach = _interactor.GetAttachTransform(grab);
-        if (!attach) return;
+        if (!attach)
+            return;
 
         Vector3 axis = localAxis.normalized;
 
-        // leverBase 로컬에서 손 위치를 측정해서 축방향으로 얼마나 밀/당겼는지 계산
         Vector3 localHandPos = leverBase.InverseTransformPoint(attach.position);
         float along = Vector3.Dot(localHandPos, axis);
 
@@ -104,14 +124,76 @@ public class CockpitLeverDirectDrive : MonoBehaviour
 
         float t = Mathf.InverseLerp(minAlong, maxAlong, along);
 
-        _outT = Mathf.Lerp(_outT, t, 1f - Mathf.Exp(-smoothing * Time.deltaTime));
+        float previousT = _outT;
+
+        _outT = Mathf.Lerp(
+            _outT,
+            t,
+            1f - Mathf.Exp(-smoothing * Time.deltaTime)
+        );
+
         plane.SetThrottle01(_outT);
+
+        PlayThrottleSFX(previousT, _outT);
 
         float deg = Mathf.Lerp(minDeg, maxDeg, _outT);
         leverBone.localRotation = _boneNeutral * Quaternion.AngleAxis(deg, leverRotAxis.normalized);
+    }
 
-        if (Time.frameCount % 30 == 0)
-            Debug.Log($"[LeverDrive:{name}] -> Plane={plane.name} throttle01={_outT:F2} (along={along:F3})");
+    void PlayThrottleSFX(float previousT, float currentT)
+    {
+        float delta = currentT - previousT;
+
+        if (Mathf.Abs(delta) < sfxThreshold)
+            return;
+
+        if (Time.time - _lastSfxTime < sfxCooldown)
+            return;
+
+        int direction = delta > 0f ? 1 : -1;
+
+        if (invertSFXDirection)
+            direction *= -1;
+
+        if (direction == _lastDirection)
+            return;
+
+        if (direction > 0)
+        {
+            if (decelerateAudioSource)
+                decelerateAudioSource.Stop();
+
+            if (accelerateAudioSource && accelerateSFX)
+            {
+                accelerateAudioSource.Stop();
+                accelerateAudioSource.clip = accelerateSFX;
+                accelerateAudioSource.Play();
+            }
+        }
+        else
+        {
+            if (accelerateAudioSource)
+                accelerateAudioSource.Stop();
+
+            if (decelerateAudioSource && decelerateSFX)
+            {
+                decelerateAudioSource.Stop();
+                decelerateAudioSource.clip = decelerateSFX;
+                decelerateAudioSource.Play();
+            }
+        }
+
+        _lastDirection = direction;
+        _lastSfxTime = Time.time;
+    }
+
+    void StopThrottleSFX()
+    {
+        if (accelerateAudioSource)
+            accelerateAudioSource.Stop();
+
+        if (decelerateAudioSource)
+            decelerateAudioSource.Stop();
     }
 
     void LockBack()
