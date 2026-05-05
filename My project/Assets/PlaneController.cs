@@ -11,7 +11,6 @@ public class PlaneController : MonoBehaviour
     [Header("UI (optional)")]
     public TextMeshProUGUI speedUIText;
 
-    // -------- Speed model --------
     [Header("Speed")]
     public float baseSpeed = 25f;
     public float minSpeed = 5f;
@@ -27,13 +26,17 @@ public class PlaneController : MonoBehaviour
 
     [Header("Cockpit Controls Override")]
     public bool useCockpitControls = true;
-    [Range(0f, 1f)] public float throttle01 = 0.5f; // 0=minSpeed, 1=maxSpeed
+    [Range(0f, 1f)] public float throttle01 = 0.5f;
     public float throttleResponse = 25f;
 
-    // -------- Attitude (tilt) --------
     [Header("Tilt Torques")]
     public float pitchPower = 2200f;
     public float rollPower = 1800f;
+
+    [Header("Bank Turning")]
+    public float bankTurnPower = 900f;
+    public float rollInputYawPower = 250f;
+    public float maxBankTurnRoll = 45f;
 
     [Header("Damping / Comfort")]
     public float pitchDamp = 0.30f;
@@ -57,11 +60,8 @@ public class PlaneController : MonoBehaviour
 
     public float currentSpeed;
 
-    // runtime inputs
     private Vector2 _stickRaw;
     private Vector2 _stickSmoothed;
-
-    // cockpit inputs (from stick/lever scripts)
     private Vector2 _cockpitStick;
 
     public void SetCockpitStick(Vector2 v)
@@ -91,34 +91,34 @@ public class PlaneController : MonoBehaviour
 
     void Update()
     {
-        // ✅ cockpit 입력 덮어쓰기
         if (useCockpitControls)
         {
             _stickRaw = _cockpitStick;
         }
         else
         {
-            // (여기엔 컨트롤러/키보드 입력을 넣어도 되지만)
             _stickRaw = Vector2.zero;
         }
 
-        // deadzone
         Vector2 dz = new Vector2(
             Mathf.Abs(_stickRaw.x) < inputDeadzone ? 0f : _stickRaw.x,
             Mathf.Abs(_stickRaw.y) < inputDeadzone ? 0f : _stickRaw.y
         );
 
-        // smoothing
-        _stickSmoothed = Vector2.Lerp(_stickSmoothed, dz, 1f - Mathf.Exp(-inputSmoothing * Time.deltaTime));
+        _stickSmoothed = Vector2.Lerp(
+            _stickSmoothed,
+            dz,
+            1f - Mathf.Exp(-inputSmoothing * Time.deltaTime)
+        );
 
-        if (speedUIText) speedUIText.text = currentSpeed.ToString("F0");
+        if (speedUIText)
+            speedUIText.text = currentSpeed.ToString("F0");
     }
 
     void FixedUpdate()
     {
         float dt = Time.fixedDeltaTime;
 
-        // 1) Speed update
         if (useCockpitControls)
         {
             float targetSpeed = Mathf.Lerp(minSpeed, maxSpeed, throttle01);
@@ -126,18 +126,15 @@ public class PlaneController : MonoBehaviour
         }
         else
         {
-            // fallback: baseSpeed 유지
             currentSpeed = MoveToward(currentSpeed, baseSpeed, returnRate * dt);
         }
 
-        // 2) Stick -> pitch/roll inputs
         float speed = rb.linearVelocity.magnitude;
         float ctlScale = Mathf.Clamp01(speed / 20f);
 
         float rollIn = Mathf.Clamp(_stickSmoothed.x, -1f, 1f);
         float pitchIn = Mathf.Clamp(-_stickSmoothed.y, -1f, 1f);
 
-        // 3) Torque
         Vector3 angVel = rb.angularVelocity;
         Vector3 localAng = transform.InverseTransformDirection(angVel);
 
@@ -146,6 +143,7 @@ public class PlaneController : MonoBehaviour
             transform.forward,
             transform.right
         );
+
         float noseUpRad = Mathf.Deg2Rad * Mathf.Clamp(noseUpDeg, -45f, 45f);
         Vector3 pitchLevelTorque = transform.right * (-noseUpRad * pitchLeveling * rb.mass);
 
@@ -154,19 +152,29 @@ public class PlaneController : MonoBehaviour
             (transform.forward * (-rollIn * rollPower * ctlScale)) +
             pitchLevelTorque;
 
-        // damping
         torque += -transform.right * (localAng.x * pitchDamp * rb.mass);
         torque += -transform.forward * (localAng.z * rollDamp * rb.mass);
         torque += -transform.up * (localAng.y * yawDamp * rb.mass);
 
-        // auto level roll
         Vector3 flatRight = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
         float rollTilt = Vector3.SignedAngle(flatRight, transform.right, transform.forward) * Mathf.Deg2Rad;
         torque += -transform.forward * (rollTilt * autoLevel * rb.mass);
 
+        // 핵심 추가:
+        // 기체가 좌우로 기울어진 정도를 이용해서 방향 전환 yaw torque 생성
+        float rollDegForTurn = Mathf.DeltaAngle(0f, transform.rotation.eulerAngles.z);
+        float bankAmount = Mathf.Clamp(rollDegForTurn / maxBankTurnRoll, -1f, 1f);
+
+        // 왼쪽으로 기울면 왼쪽으로, 오른쪽으로 기울면 오른쪽으로 회전
+        float bankYaw = -bankAmount * bankTurnPower * ctlScale;
+
+        // 스틱 입력 자체도 약간 yaw에 반영해서 조작감 즉각성 추가
+        float inputYaw = rollIn * rollInputYawPower * ctlScale;
+
+        torque += transform.up * (bankYaw + inputYaw);
+
         rb.AddTorque(torque, ForceMode.Force);
 
-        // upright assist (fade with input)
         float inputMag = Mathf.Clamp01(_stickSmoothed.magnitude);
         float assistScale = 1f - inputMag * assistFadeWithInput;
 
@@ -174,7 +182,6 @@ public class PlaneController : MonoBehaviour
         Vector3 uprightTorque = upError * (uprightStrength * rb.mass) - rb.angularVelocity * uprightDamping;
         rb.AddTorque(uprightTorque * assistScale, ForceMode.Force);
 
-        // roll limit
         float rollDeg = Mathf.DeltaAngle(0f, transform.rotation.eulerAngles.z);
         if (Mathf.Abs(rollDeg) > maxRollDegrees)
         {
@@ -182,11 +189,13 @@ public class PlaneController : MonoBehaviour
             rb.AddTorque(transform.forward * -excess * 20f, ForceMode.Force);
         }
 
-        // 4) Forward velocity
         Vector3 targetVel = transform.forward * currentSpeed;
-        rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVel, 1f - Mathf.Exp(-speedAlignRate * dt));
+        rb.linearVelocity = Vector3.Lerp(
+            rb.linearVelocity,
+            targetVel,
+            1f - Mathf.Exp(-speedAlignRate * dt)
+        );
 
-        // 5) Simple lift (optional)
         if (useSimpleLift)
         {
             float liftFactor = Mathf.Clamp01(rb.linearVelocity.magnitude / Mathf.Max(0.01f, baseSpeed));
@@ -194,7 +203,6 @@ public class PlaneController : MonoBehaviour
             rb.AddForce(simpleLift, ForceMode.Force);
         }
 
-        // Debug
         if (debugLog && Time.frameCount % 30 == 0)
         {
             Debug.Log($"[PlaneController:{name}] stick={_cockpitStick} throttle01={throttle01:F2} speed={currentSpeed:F1} rbVel={rb.linearVelocity.magnitude:F1}");
