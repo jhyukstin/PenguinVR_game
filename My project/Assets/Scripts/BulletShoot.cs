@@ -8,6 +8,10 @@ public class BulletShoot : MonoBehaviour
     public float shootForce = 20f;
     public float rotationForce = 20f;
 
+    [Header("SFX")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shootSFX;
+
     private InputSystem_Actions input;
 
     void Awake()
@@ -41,7 +45,16 @@ public class BulletShoot : MonoBehaviour
         );
 
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
-        rb.linearVelocity = shootingPoint.forward * shootForce;
-        rb.angularVelocity = Random.insideUnitSphere * rotationForce;
+
+        if (rb)
+        {
+            rb.linearVelocity = shootingPoint.forward * shootForce;
+            rb.angularVelocity = Random.insideUnitSphere * rotationForce;
+        }
+
+        if (audioSource && shootSFX)
+        {
+            audioSource.PlayOneShot(shootSFX);
+        }
     }
 }
