@@ -1,18 +1,17 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyInfo : MonoBehaviour
 {
     public float enemyHP = 20f;
     public float enemySpeed = 1.0f;
-    public GameObject WinScreen;
+
+    [SerializeField] private string winSceneName = "WinCutScene";
     public bool win;
 
     private void Start()
     {
         win = false;
-
-        if (WinScreen)
-            WinScreen.SetActive(false);
     }
     public void TakeDamage(int damageAmount)
     {
@@ -32,7 +31,18 @@ public class EnemyInfo : MonoBehaviour
         win = true;
         Debug.Log("Player Wins");
 
-        if (WinScreen)
-            WinScreen.SetActive(true);
+        if (string.IsNullOrWhiteSpace(winSceneName))
+        {
+            Debug.LogWarning("EnemyInfo: No win scene name assigned.");
+            return;
+        }
+
+        if (!Application.CanStreamedLevelBeLoaded(winSceneName))
+        {
+            Debug.LogError($"EnemyInfo: Scene '{winSceneName}' is not in Build Settings.");
+            return;
+        }
+
+        SceneManager.LoadScene(winSceneName);
     }
 }

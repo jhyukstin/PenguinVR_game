@@ -2627,6 +2627,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6824387550750193943, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 234.7194
+      objectReference: {fileID: 0}
+    - target: {fileID: -6824387550750193943, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 396.6594
+      objectReference: {fileID: 0}
+    - target: {fileID: -6824387550750193943, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 189.02025
+      objectReference: {fileID: 0}
+    - target: {fileID: -6824387550750193943, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.72
+      objectReference: {fileID: 0}
+    - target: {fileID: -6824387550750193943, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.44
+      objectReference: {fileID: 0}
     - target: {fileID: -6067185528594298527, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -2639,14 +2659,50 @@ PrefabInstance:
       propertyPath: m_Name
       value: Starting Button Icebergs
       objectReference: {fileID: 0}
+    - target: {fileID: 2508838339402827008, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 06013d47390782c4fb3e383caeaac562, type: 2}
     - target: {fileID: 3561512702087294466, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 0890bc6a55cabed43bbf6f81f2b82e84, type: 2}
+    - target: {fileID: 6170364737530096044, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 06013d47390782c4fb3e383caeaac562, type: 2}
+    - target: {fileID: 8699224783455019111, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 06013d47390782c4fb3e383caeaac562, type: 2}
+    - target: {fileID: 8804625046137572299, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 244.0164
+      objectReference: {fileID: 0}
+    - target: {fileID: 8804625046137572299, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 149.05156
+      objectReference: {fileID: 0}
+    - target: {fileID: 8804625046137572299, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 123.73688
+      objectReference: {fileID: 0}
+    - target: {fileID: 8804625046137572299, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 8804625046137572299, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.41
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 65702495048144492, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
     - {fileID: -8700617353114198275, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+    - {fileID: -1833681543186653226, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+    - {fileID: -8513424388201257645, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+    - {fileID: 3141101260113499581, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
+    - {fileID: 6972403430118580280, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -5966029083058991590, guid: 355a990bbcb86414fb2ece153294ac8d, type: 3}
@@ -2683,7 +2739,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2124367769
 MonoBehaviour:
   m_ObjectHideFlags: 0
